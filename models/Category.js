@@ -1,11 +1,22 @@
 const mongoose = require('mongoose');
+const User = require('./User');
+const { required } = require('nodemon/lib/config');
+const { Schema } = mongoose;
 
-const UserSchema = new mongoose.Schema({
+const CategorySchema = new mongoose.Schema({
 
-    CategoryName : { type: String, require: true, unique:true},
+    categoryname : { type: String, require: true, unique:true },
+    categorydescription : { type: String, require: true },
+    parentcategory: { type: Array,
+        items: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
+    },
+
     
 }, 
 {timestamps: true}
 );
 
-module.exports = mongoose.model("Category", UserSchema);
+module.exports = mongoose.model("Category", CategorySchema);

@@ -33,4 +33,21 @@ const verifyTokenAuthorization = (req, res, next)=>{
     });
 }
 
-module.exports = {verfiyToken, verifyTokenAuthorization};
+const verifyTokenAndAdmin = (req, res, next)=>{
+    verfiyToken(req, res, async ()=>{
+        if(req.user.id === req.params.id){
+            const user = await User.findOne({_id: req.params.id});
+            if(user.role == "ADMIN"){
+                next();
+            }
+            else{
+                res.status(405).json(user);
+            }
+        }
+        else{
+            res.status(403).json("Incorrect Token");
+        }
+    });
+}
+
+module.exports = {verfiyToken, verifyTokenAuthorization, verifyTokenAndAdmin};

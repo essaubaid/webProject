@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+const { required } = require('nodemon/lib/config');
 
-const UserSchema = new mongoose.Schema({
+const BrandSchema = new mongoose.Schema({
 
     brandName : { type: String, require: true, unique:true},
 }, 
 {timestamps: true}
 );
 
-module.exports = mongoose.model("Brand", UserSchema);
+module.exports = mongoose.model("Brand", BrandSchema);
