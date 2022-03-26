@@ -41,7 +41,7 @@ const verifyTokenAndAdmin = (req, res, next)=>{
                 next();
             }
             else{
-                res.status(405).json(user);
+                res.status(405).json("You are not an Admin");
             }
         }
         else{

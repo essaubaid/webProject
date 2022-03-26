@@ -32,4 +32,16 @@ router.get("/getBrands", async (req, res)=>{
 
 });
 
+router.put("/updateBrand/:id/:brandID", verifyTokenAndAdmin, async (req, res)=>{
+    try{
+        const updatedBrand = await Brand.findByIdAndUpdate(req.params.brandID, {
+            $set: req.body
+        }, {new:true});
+        res.status(200).json(updatedBrand);
+    }
+    catch(err){
+        res.status(404).json(err);
+    }
+});
+
 module.exports = router;
