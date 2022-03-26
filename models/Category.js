@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 
 const CategorySchema = new mongoose.Schema({
 
-    categoryname : { type: String, require: true, unique:true },
-    categorydescription : { type: String, require: true },
+    categoryname : { type: String, required: true, unique:true },
+    categorydescription : { type: String, required: true },
     parentcategory: { type: Schema.Types.ObjectId,
         ref: 'Category'
     },
