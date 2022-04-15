@@ -3,14 +3,14 @@ const { required } = require('nodemon/lib/config');
 
 const UserSchema = new mongoose.Schema({
 
-    username : { type: String, require: true, unique:true},
-    email: {type: String, require: true, unique: true },
-    password: {type: String, require: true },
-    f_name: {type: String, require: true},
-    l_name: {type: String, require: true},
+    username : { type: String, required: true, unique:true},
+    email: {type: String, required: true, unique: true },
+    password: {type: String, required: true },
+    f_name: {type: String, pattern: "^[+][0-9]*$", required: true},
+    l_name: {type: String, required: true},
     phone_number: {type: Object, properties: {
-        areaCode:{type: String, pattern: "^[+][0-9]*$",minlength:3, maxlength:4},
-        number:{type:String, pattern: "^[0-9]$", minlength:10, maxlength:10},
+        areaCode:{type: String, pattern: "^[+][0-9]*$",minLength:3, maxLength:4},
+        number:{type:String, pattern: "^[0-9]$", minLength:10, maxLength:10},
         },
         required:["areaCode", "number"], additionalProperties: false,
     },
