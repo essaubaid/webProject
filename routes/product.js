@@ -1,28 +1,41 @@
 const Product = require("../models/Product");
-const {verifyTokenAndAdmin} = require("./verifyToken");
+const { verifyTokenAndAdmin } = require("./verifyToken");
+const { uploadFile } = require('./S3')
+const { unlinkFile } = require('./imageProcessing')
+
+/* Import Multer */
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 const router = require("express").Router();
 
-router.post("/createProduct/:id", verifyTokenAndAdmin, async(req, res)=>{
-    const newProduct = new Product({
-        productName: req.body.productName,
-        productPrice: req.body.productPrice,
-        stock: req.body.stock,
-        productBrand: req.body.productBrand,
-        productCategory: req.body.productCategory
+router.post("/createProduct/:id", verifyTokenAndAdmin,
+    upload.single('productImage'), async (req, res) => {
+
+        const file = req.file
+        const result = await uploadFile(file)
+        await unlinkFile(file.path)
+        const newProduct = new Product({
+            productName: req.body.productName,
+            productPrice: req.body.productPrice,
+            stock: req.body.stock,
+            productBrand: req.body.productBrand,
+            productCategory: req.body.productCategory,
+            productImageURL: result.Key
+        });
+
+        try {
+            const savedProduct = await newProduct.save();
+            res.status(210).json(savedProduct);
+            //res.status(210).json(newProduct);
+        }
+        catch (err) {
+            res.status(510).json(err);
+        }
     });
 
-    try{
-        const savedProduct = await newProduct.save();
-        res.status(210).json(savedProduct);
-    }
-    catch(err){
-        res.status(510).json(err);
-    }
-});
-
-router.get("/getAllProducts", async(req, res)=>{
-    try{
+router.get("/getAllProducts", async (req, res) => {
+    try {
         const allProducts = await Product.find({});
         const MapProducts = [];
 
@@ -31,20 +44,20 @@ router.get("/getAllProducts", async(req, res)=>{
         });
         res.status(211).json(MapProducts);
     }
-    catch(err){
+    catch (err) {
         res.status(511).json(err);
     }
 });
 
-router.put("/updateProduct/:id/:productID", verifyTokenAndAdmin, async(req, res)=>{
-    try{
+router.put("/updateProduct/:id/:productID", verifyTokenAndAdmin, async (req, res) => {
+    try {
         const updatedProduct = await Product.findByIdAndUpdate(req.params.productID, {
             $set: req.body
-        }, {new:true});
+        }, { new: true });
 
         res.status(212).json(updatedProduct);
     }
-    catch(err){
+    catch (err) {
         res.status(512).json(err);
     }
 });
