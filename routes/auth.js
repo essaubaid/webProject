@@ -57,7 +57,6 @@ router.post("/login", async (req, res) => {
 router.put("/logout/:id", verifyTokenAuthorization, async (req, res) => {
 
     try {
-        console.log("This happened");
         const updatedUser = await User.findByIdAndUpdate(req.params.id, {
             token: "",
         }, { new: true });
