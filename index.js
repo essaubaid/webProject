@@ -22,7 +22,7 @@ dotenv.config();
 //     console.log(err);
 // });
 
-mongoose.connect("mongodb+srv://essaubaid:7eyw55xvJd37HUv@thirfty.kzge54i.mongodb.net/?retryWrites=true&w=majority").then(() =>
+mongoose.connect(`mongodb+srv://${process.env.MONGO_COMPASS_USERNAME}:${process.env.MONGO_COMPASS_PASSWORD}@thirfty.kzge54i.mongodb.net/?retryWrites=true&w=majority`).then(() =>
     console.log("DB Connected Successfully")
 ).catch((err) => {
     console.log(err);
