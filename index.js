@@ -13,6 +13,7 @@ const orderRouter = require("./routes/order");
 const eventsRouter = require("./routes/events");
 const reviewsRouter = require("./routes/reviews");
 const imagesRouter = require("./routes/images");
+const stripeRouter = require("./routes/stripe");
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use("/api/order", orderRouter);
 app.use("/api/reviews", reviewsRouter);
 app.use("/api/events", eventsRouter);
 app.use("/api/images", imagesRouter);
+app.use("/api/checkout", stripeRouter);
 
 app.listen(5000, () => {
     console.log("Backend server is running")
