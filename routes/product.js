@@ -21,7 +21,9 @@ router.post("/createProduct/:id", verifyTokenAndAdmin,
             stock: req.body.stock,
             productBrand: req.body.productBrand,
             productCategory: req.body.productCategory,
-            productImageURL: result.Key
+            color: req.body.color,
+            size: req.body.size,
+            productImageURL: result.Key,
         });
 
         try {
@@ -36,13 +38,24 @@ router.post("/createProduct/:id", verifyTokenAndAdmin,
 
 router.get("/getAllProducts", async (req, res) => {
     try {
-        const allProducts = await Product.find({});
+        const allProducts = await Product.find(req.body);
         const MapProducts = [];
 
         allProducts.forEach(element => {
             MapProducts.push(element);
         });
         res.status(211).json(MapProducts);
+    }
+    catch (err) {
+        res.status(511).json(err);
+    }
+});
+
+router.get("/find/:id", async (req, res) => {
+    try {
+        const Products = await Product.findById(req.params.id);
+
+        res.status(211).json(Products);
     }
     catch (err) {
         res.status(511).json(err);
