@@ -1,6 +1,6 @@
 const Product = require("../models/Product");
 const { verifyTokenAndAdmin } = require("./verifyToken");
-const { uploadFile } = require('./S3')
+const { uploadFile, deleteFile } = require('./S3')
 const { unlinkFile } = require('./imageProcessing')
 
 /* Import Multer */
@@ -75,6 +75,24 @@ router.put("/updateProduct/:id/:productID", verifyTokenAndAdmin, async (req, res
     }
 });
 
+router.delete("/deleteProduct/:id/:productID", verifyTokenAndAdmin, async (req, res) => {
+    try {
+        const Products = await Product.findById(req.params.productID);
+        if (Products) {
+
+            deleteFile(Products.productImageURL);
+            await Product.findByIdAndRemove(req.params.productID);
+
+            res.status(212).json("product deleted");
+        }
+        else {
+            res.status(212).json("no such product exists");
+        }
+    }
+    catch (err) {
+        res.status(512).json(err);
+    }
+});
 
 
 module.exports = router;
