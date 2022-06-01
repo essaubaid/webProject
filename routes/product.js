@@ -62,16 +62,55 @@ router.get("/find/:id", async (req, res) => {
     }
 });
 
-router.put("/updateProduct/:id/:productID", verifyTokenAndAdmin, async (req, res) => {
+router.put("/updateProduct/:id/:productID", verifyTokenAndAdmin, upload.single('productImage'), async (req, res) => {
     try {
-        const updatedProduct = await Product.findByIdAndUpdate(req.params.productID, {
-            $set: req.body
-        }, { new: true });
+        const currentProduct = await Product.findById(req.params.productID);
 
-        res.status(212).json(updatedProduct);
+        if (req.file) {
+            if (currentProduct) {
+                deleteFile(currentProduct.productImageURL);
+                const file = req.file
+                const result = await uploadFile(file)
+                await unlinkFile(file.path)
+
+                const updatedProduct = await Product.findByIdAndUpdate(req.params.productID, {
+                    productName: req.body.productName,
+                    productPrice: req.body.productPrice,
+                    stock: req.body.stock,
+                    productBrand: req.body.productBrand,
+                    productCategory: req.body.productCategory,
+                    color: req.body.color,
+                    size: req.body.size,
+                    productImageURL: result.Key,
+                }, { new: true });
+
+                res.status(212).json(updatedProduct);
+            }
+            else {
+                res.status(212).json(err);
+            }
+        }
+        else {
+            if (currentProduct) {
+                const updatedProduct = await Product.findByIdAndUpdate(req.params.productID, {
+                    productName: req.body.productName,
+                    productPrice: req.body.productPrice,
+                    stock: req.body.stock,
+                    productBrand: req.body.productBrand,
+                    productCategory: req.body.productCategory,
+                    color: req.body.color,
+                    size: req.body.size,
+                }, { new: true });
+
+                res.status(212).json(updatedProduct);
+            }
+            else {
+                res.status(212).json("no such product exists");
+            }
+        }
     }
     catch (err) {
-        res.status(512).json(err);
+        res.status(512).json("yes its here");
     }
 });
 
@@ -91,6 +130,21 @@ router.delete("/deleteProduct/:id/:productID", verifyTokenAndAdmin, async (req, 
     }
     catch (err) {
         res.status(512).json(err);
+    }
+});
+
+router.post("/test", upload.single('productImage'), async (req, res) => {
+    try {
+        if (req.file) {
+            console.log("file was sent")
+        }
+        else {
+            console.log("file not sent")
+        }
+        res.status(211).json("ok");
+    }
+    catch (err) {
+        res.status(511).json("err");
     }
 });
 

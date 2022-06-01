@@ -10,11 +10,11 @@ const ProductSchema = new mongoose.Schema({
     productImageURL: { type: String },
     productBrand: {
         type: Schema.Types.ObjectId,
-        ref: "Brand", required: true
+        ref: "Brand"
     },
     productCategory: {
         type: Schema.Types.ObjectId,
-        ref: "Category", required: true
+        ref: "Category"
     },
     color: {
         type: Array, items: [
