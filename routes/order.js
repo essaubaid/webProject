@@ -1,72 +1,86 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
-const {verifyTokenAuthorization, verifyTokenAndAdmin} = require("./verifyToken");
+const { verifyTokenAuthorization, verifyTokenAndAdmin } = require("./verifyToken");
 
 const router = require("express").Router();
 
-router.post("/createOrder/:id", verifyTokenAuthorization, async(req, res)=>{
-    const newOrder = new Order({
-        userID: req.params.id,
-        OrderDetails: req.body.OrderDetails,
-        shipping_address: req.body.shipping_address
-    });
+router.post("/createOrder/:id", verifyTokenAuthorization, async (req, res) => {
 
-    const findPrice = async(element) =>{
-        const currentProduct = await Product.findById(element.productID);
-        element.price = currentProduct.productPrice * element.quantity;
-        return element.price;
-    };
-    
+    try {
+        const newOrder = new Order({
+            userID: req.params.id,
+            username: req.body.username,
+            OrderDetails: req.body.OrderDetails,
+            shipping_address: req.body.shipping_address
+        });
 
-    // newOrder.OrderDetails.forEach(async (element, index) => {
-    //     const price = await findPrice(element);
-    //     newOrder.OrderDetails[index].price = price;
-    //     console.log("old");
-    // });
-    
-    let grossTotal = 0;
-    for(index = 0; index < newOrder.OrderDetails.length; index++){
-        const price = await findPrice(newOrder.OrderDetails[index]);
-        grossTotal = grossTotal + price;
-        newOrder.OrderDetails[index].price = price;
-    }
-    // console.log("new");
+        let total = 0
 
-    newOrder.grossTotal = grossTotal;
+        newOrder.OrderDetails.map((item) => (
+            item.price = item.product.productPrice * item.quantity
+        ))
 
-    try{
+        newOrder.OrderDetails.map((item) => (
+            total += item.price
+        ))
+
+        newOrder.grossTotal = total
+
+        // const findPrice = async(element) =>{
+        //     const currentProduct = await Product.findById(element.productID);
+        //     element.price = currentProduct.productPrice * element.quantity;
+        //     return element.price;
+        // };
+
+
+        // newOrder.OrderDetails.forEach(async (element, index) => {
+        //     const price = await findPrice(element);
+        //     newOrder.OrderDetails[index].price = price;
+        //     console.log("old");
+        // });
+
+        // let grossTotal = 0;
+        // for (index = 0; index < newOrder.OrderDetails.length; index++) {
+        //     const price = await findPrice(newOrder.OrderDetails[index]);
+        //     grossTotal = grossTotal + price;
+        //     newOrder.OrderDetails[index].price = price;
+        // }
+        // console.log("new");
+
+        // newOrder.grossTotal = grossTotal;
+
         const savedOrder = await newOrder.save();
         // console.log("test");
         res.status(212).json(savedOrder);
     }
-    catch(err){
+    catch (err) {
         res.status(512).json(err);
     }
 });
 
-router.get("/getAllOrders/:id", verifyTokenAndAdmin, async(req, res)=>{
-    try{
+router.get("/getAllOrders/:id", verifyTokenAndAdmin, async (req, res) => {
+    try {
         const allOrders = await Order.find(req.body);
-        
+
         res.status(211).json(allOrders);
     }
-    catch(err){
+    catch (err) {
         res.status(511).json(err);
     }
 
-    
+
 
 });
 
-router.put("/updateStatus/:id/:OrderID", verifyTokenAndAdmin, async(req, res)=>{
-    try{
+router.put("/updateStatus/:id/:OrderID", verifyTokenAndAdmin, async (req, res) => {
+    try {
         const updatedOrder = await Order.findByIdAndUpdate(req.params.OrderID, {
             orderStatus: req.body.orderStatus
-        }, {new:true});
+        }, { new: true });
 
         res.status(212).json(updatedOrder);
     }
-    catch(err){
+    catch (err) {
         res.status(512).json(err);
     }
 });
