@@ -7,9 +7,14 @@ const router = require("express").Router();
 router.get("/:key", async (req, res) => {
 
     const key = req.params.key
-    const readStream = getFileStream(key)
+    if (key) {
+        const readStream = getFileStream(key)
+        readStream.pipe(res)
+    }
+    else {
 
-    readStream.pipe(res)
+    }
+
 });
 
 module.exports = router
